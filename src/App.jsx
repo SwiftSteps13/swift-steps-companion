@@ -23,14 +23,132 @@ const ERAS = [
   { id: 10, name: "Showgirl", subtitle: "Celebration", color: "#D4A574", emoji: "🎭", weeks: "53–57", themes: "embodied joy, taking up space" },
 ];
 
+// Zoom links
+const ZOOM_MEETINGS = "https://us06web.zoom.us/j/85374963048";
+const ZOOM_BODY_DOUBLING = "https://us06web.zoom.us/j/8712131989?pwd=SOu0askYyVoGQvKSR9IQY2jb3Nu4aL.1";
+
+// Full meeting schedule. Each day has an array of meetings (some days have 2).
+// Sunday's 7 PM alternates between Book Club and Swift Reset by week.
 const MEETINGS = {
-  Monday: { name: "Theme Discussion", desc: "grounding in the week's era theme" },
-  Tuesday: { name: "Speak Now", desc: "speaker meeting, story-sharing" },
-  Wednesday: { name: "Relapse Prevention", desc: "pattern awareness, early warning" },
-  Thursday: { name: "Theme Check-In", desc: "deeper discussion of the theme" },
-  Friday: { name: "Craft Social", desc: "low-pressure connection, no agenda" },
-  Saturday: { name: "Surprise Song", desc: "music + processing, deep dives" },
-  Sunday: { name: "Gratitude / Reset", desc: "reflection, book club, gentle close" },
+  Monday: [
+    {
+      time: "8:00 PM ET",
+      hour24: 20,
+      name: "Theme Discussion",
+      desc: "grounding in the week's era theme",
+      whatToExpect: "we open the week by sitting with the era's theme together. light grounding, no pressure to share.",
+      link: ZOOM_MEETINGS,
+    },
+  ],
+  Tuesday: [
+    {
+      time: "8:00 PM ET",
+      hour24: 20,
+      name: "Speak Now",
+      desc: "speaker meeting, story-sharing",
+      whatToExpect: "one person shares their story for a while. you can listen, react, or share your own. no agenda beyond honesty.",
+      link: ZOOM_MEETINGS,
+    },
+  ],
+  Wednesday: [
+    {
+      time: "12:00 PM ET",
+      hour24: 12,
+      name: "Relapse Prevention",
+      desc: "pattern awareness, early warning",
+      whatToExpect: "midday version. we name what's been loud, notice patterns, and stay honest about urges. no fixing.",
+      link: ZOOM_MEETINGS,
+    },
+    {
+      time: "8:00 PM ET",
+      hour24: 20,
+      name: "Relapse Prevention",
+      desc: "pattern awareness, early warning",
+      whatToExpect: "evening version. same intention, deeper time. for when the day surfaced something you want to bring.",
+      link: ZOOM_MEETINGS,
+    },
+  ],
+  Thursday: [
+    {
+      time: "8:00 PM ET",
+      hour24: 20,
+      name: "Theme Check-In",
+      desc: "deeper discussion of the theme",
+      whatToExpect: "we sit with this week's theme together. no fixing, no advice. just space to share where you're landing with it.",
+      link: ZOOM_MEETINGS,
+    },
+  ],
+  Friday: [
+    {
+      time: "8:00 PM ET",
+      hour24: 20,
+      name: "Craft Social",
+      desc: "low-pressure connection, no agenda",
+      whatToExpect: "bring a project or just bring yourself. cameras optional. talk, don't talk, work on something with your hands.",
+      link: ZOOM_MEETINGS,
+    },
+  ],
+  Saturday: [
+    {
+      time: "8:00 PM ET",
+      hour24: 20,
+      name: "Surprise Song",
+      desc: "music + processing, deep dives",
+      whatToExpect: "we drop into a song together and follow what surfaces. recovery through the lyrics we already know by heart.",
+      link: ZOOM_MEETINGS,
+    },
+  ],
+  Sunday: [
+    {
+      time: "11:00 AM ET",
+      hour24: 11,
+      name: "Gratitude",
+      desc: "reflection, gentle close",
+      whatToExpect: "soft sunday morning. we name what we're grateful for, what we survived, and what we're carrying into the new week.",
+      link: ZOOM_MEETINGS,
+    },
+    // 7 PM alternates each week, handled in the function below
+  ],
+};
+
+// Sunday's 7 PM alternates: Book Club one week, Swift Reset the next.
+// Use ISO week number to alternate. Even weeks = Book Club, odd weeks = Swift Reset.
+const getISOWeek = (date) => {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+};
+
+const getSundayEvening = (date) => {
+  const week = getISOWeek(date);
+  if (week % 2 === 0) {
+    return {
+      time: "7:00 PM ET",
+      hour24: 19,
+      name: "Book Club",
+      desc: "biweekly · reading & reflection",
+      whatToExpect: "we read something together and let it open conversation. bring the book, your thoughts, or just your presence.",
+      link: ZOOM_MEETINGS,
+    };
+  }
+  return {
+    time: "7:00 PM ET",
+    hour24: 19,
+    name: "Swift Reset",
+    desc: "biweekly · close the week, start fresh",
+    whatToExpect: "the gentle reset before the new week. release what we're carrying, set quiet intentions, end the week steady.",
+    link: ZOOM_MEETINGS,
+  };
+};
+
+// Always-available body doubling room
+const BODY_DOUBLING = {
+  name: "Body Doubling Room",
+  desc: "open whenever",
+  whatToExpect: "come work, exist, or just have someone there. cameras optional. no agenda. presence is the whole point.",
+  link: ZOOM_BODY_DOUBLING,
 };
 
 // Week-by-week breakdown for current era support
@@ -276,11 +394,46 @@ const CRISIS_PATTERNS = [
 
 const detectCrisis = (text) => CRISIS_PATTERNS.some((p) => p.test(text));
 
-// ---------- Today's meeting ----------
-const todayMeeting = () => {
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const today = days[new Date().getDay()];
-  return { day: today, ...MEETINGS[today] };
+// ---------- Today's meetings (and next upcoming if none today) ----------
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+const getMeetingsForDay = (dayName, date) => {
+  const list = [...(MEETINGS[dayName] || [])];
+  if (dayName === "Sunday") {
+    list.push(getSundayEvening(date));
+  }
+  return list;
+};
+
+const todayMeetings = () => {
+  const now = new Date();
+  const today = DAYS[now.getDay()];
+  const meetings = getMeetingsForDay(today, now);
+  // Filter out meetings that have already started more than 30 minutes ago
+  const currentHour = now.getHours();
+  const currentMinutes = now.getMinutes();
+  return {
+    day: today,
+    meetings: meetings.map((m) => {
+      const minutesUntil = (m.hour24 - currentHour) * 60 - currentMinutes;
+      return { ...m, minutesUntil, isPast: minutesUntil < -30 };
+    }),
+  };
+};
+
+// Find the next meeting if none today (or all today are past)
+const nextMeeting = () => {
+  const now = new Date();
+  for (let offset = 1; offset <= 7; offset++) {
+    const future = new Date(now);
+    future.setDate(now.getDate() + offset);
+    const dayName = DAYS[future.getDay()];
+    const list = getMeetingsForDay(dayName, future);
+    if (list.length > 0) {
+      return { day: dayName, ...list[0], daysAway: offset };
+    }
+  }
+  return null;
 };
 
 // ============================================================
@@ -353,9 +506,11 @@ function WelcomeView({ era, onEnter }) {
       </div>
 
       <div style={welcomeStyles.scrollContent}>
-        {/* Logo */}
+        {/* Logo + app name */}
         <div style={welcomeStyles.logoBlock} className="welcome-fade-1">
           <img src={SWIFT_STEPS_LOGO} alt="Swift Steps" style={welcomeStyles.logoImg} />
+          <p style={welcomeStyles.appName}>ioSwiftie</p>
+          <p style={welcomeStyles.appBy}>by Swift Steps</p>
         </div>
 
         {/* Headline */}
@@ -538,6 +693,24 @@ const welcomeStyles = {
     borderRadius: "50%",
     boxShadow: "0 6px 28px rgba(123, 91, 168, 0.18)",
   },
+  appName: {
+    fontFamily: "'Fraunces', serif",
+    fontSize: 26,
+    fontWeight: 600,
+    fontStyle: "italic",
+    color: "#3A2E4A",
+    margin: "16px 0 0",
+    letterSpacing: "-0.015em",
+  },
+  appBy: {
+    fontFamily: "'Fraunces', serif",
+    fontSize: 11,
+    fontWeight: 500,
+    letterSpacing: "0.28em",
+    textTransform: "uppercase",
+    color: "#6B6B6B",
+    margin: "4px 0 0",
+  },
   middleBlock: {
     display: "flex",
     flexDirection: "column",
@@ -708,17 +881,20 @@ function StatusBar({ era }) {
 // HOME
 // ============================================================
 function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setStreak, lastCheckIn, setLastCheckIn, checkIns, setCheckIns, setTab }) {
-  const meeting = todayMeeting();
+  const todayInfo = todayMeetings();
+  const upcomingToday = todayInfo.meetings.filter((m) => !m.isPast);
+  const upcomingNext = upcomingToday.length === 0 ? nextMeeting() : null;
   const today = new Date().toDateString();
   const checkedInToday = lastCheckIn === today;
   const weekData = ERA_WEEKS[era.name]?.[weekInEra - 1];
+  const [expandedMeeting, setExpandedMeeting] = useState(null);
+  const [bodyDoublingExpanded, setBodyDoublingExpanded] = useState(false);
 
   const handleCheckIn = async (mood) => {
     const newCheckIns = [...checkIns, { date: today, mood, era: era.name, week: weekInEra }];
     await setCheckIns(newCheckIns);
     await setLastCheckIn(today);
 
-    // streak logic
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const wasYesterday = lastCheckIn === yesterday.toDateString();
@@ -727,6 +903,13 @@ function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setSt
 
   return (
     <div style={{ padding: "20px 22px 100px" }}>
+      {/* Brand header */}
+      <div style={styles.homeBrandHeader}>
+        <img src={SWIFT_STEPS_LOGO} alt="Swift Steps" style={styles.homeBrandLogo} />
+        <p style={styles.homeBrandWordmark}>ioSwiftie</p>
+        <p style={styles.homeBrandBy}>by Swift Steps</p>
+      </div>
+
       <div style={{ marginBottom: 28 }}>
         <p style={styles.greeting}>hi. you're here.</p>
         <p style={styles.greetingSub}>that's enough for right now.</p>
@@ -787,18 +970,101 @@ function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setSt
         )}
       </div>
 
-      {/* Today's meeting */}
+      {/* Today's meetings */}
       <div style={styles.section}>
-        <p style={styles.sectionLabel}>tonight's meeting</p>
-        <div style={styles.meetingCard}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <p style={styles.meetingDay}>{meeting.day}</p>
-              <p style={styles.meetingName}>{meeting.name}</p>
-              <p style={styles.meetingDesc}>{meeting.desc}</p>
-            </div>
-            <button style={styles.meetingBtn}>open</button>
+        <p style={styles.sectionLabel}>
+          {upcomingToday.length > 0 ? "today's meetings" : "next meeting"}
+        </p>
+
+        {upcomingToday.length > 0 ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {upcomingToday.map((m, i) => {
+              const isExpanded = expandedMeeting === i;
+              return (
+                <div key={i} style={styles.meetingCard}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ flex: 1 }}>
+                      <p style={styles.meetingDay}>{todayInfo.day} · {m.time}</p>
+                      <p style={styles.meetingName}>{m.name}</p>
+                      <p style={styles.meetingDesc}>{m.desc}</p>
+                    </div>
+                    <button
+                      onClick={() => setExpandedMeeting(isExpanded ? null : i)}
+                      style={{ ...styles.meetingBtn, background: era.color }}
+                    >
+                      {isExpanded ? "close" : "open"}
+                    </button>
+                  </div>
+                  {isExpanded && (
+                    <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #EDE6DC" }}>
+                      <p style={{ fontFamily: "'Fraunces', serif", fontSize: 14, fontStyle: "italic", color: "#2D2D2D", lineHeight: 1.5, margin: "0 0 14px" }}>
+                        {m.whatToExpect}
+                      </p>
+                      <a
+                        href={m.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ ...styles.zoomBtn, background: era.color }}
+                      >
+                        Join the Zoom →
+                      </a>
+                      <p style={{ fontSize: 11, color: "#6B6B6B", fontStyle: "italic", textAlign: "center", margin: "10px 0 0" }}>
+                        or just listen. being here is enough.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
+        ) : upcomingNext ? (
+          <div style={styles.meetingCard}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ flex: 1 }}>
+                <p style={styles.meetingDay}>{upcomingNext.day} · {upcomingNext.time}</p>
+                <p style={styles.meetingName}>{upcomingNext.name}</p>
+                <p style={styles.meetingDesc}>{upcomingNext.desc}</p>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </div>
+
+      {/* Body doubling room - always available */}
+      <div style={styles.section}>
+        <p style={styles.sectionLabel}>always open</p>
+        <div style={{ ...styles.meetingCard, background: `linear-gradient(135deg, ${era.color}10 0%, #fff 100%)` }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ flex: 1 }}>
+              <p style={styles.meetingDay}>open whenever</p>
+              <p style={styles.meetingName}>{BODY_DOUBLING.name}</p>
+              <p style={styles.meetingDesc}>{BODY_DOUBLING.desc}</p>
+            </div>
+            <button
+              onClick={() => setBodyDoublingExpanded(!bodyDoublingExpanded)}
+              style={{ ...styles.meetingBtn, background: era.color }}
+            >
+              {bodyDoublingExpanded ? "close" : "open"}
+            </button>
+          </div>
+          {bodyDoublingExpanded && (
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #EDE6DC" }}>
+              <p style={{ fontFamily: "'Fraunces', serif", fontSize: 14, fontStyle: "italic", color: "#2D2D2D", lineHeight: 1.5, margin: "0 0 14px" }}>
+                {BODY_DOUBLING.whatToExpect}
+              </p>
+              <a
+                href={BODY_DOUBLING.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ ...styles.zoomBtn, background: era.color }}
+              >
+                Join the Room →
+              </a>
+              <p style={{ fontSize: 11, color: "#6B6B6B", fontStyle: "italic", textAlign: "center", margin: "10px 0 0" }}>
+                you don't have to talk. you can just exist alongside.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -940,11 +1206,11 @@ function ChatView({ era, weekInEra }) {
       <div style={styles.chatHeader}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ ...styles.avatar, background: era.color }}>
-            <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>SS</span>
+            <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>iO</span>
           </div>
           <div style={{ flex: 1 }}>
-            <p style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 16, fontWeight: 500 }}>
-              Swift Steps Companion
+            <p style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 17, fontWeight: 600, fontStyle: "italic", color: "#3A2E4A", letterSpacing: "-0.01em" }}>
+              ioSwiftie
             </p>
             <p style={{ margin: 0, fontSize: 11, color: "#6B6B6B" }}>
               {era.emoji} {era.name} · week {weekInEra} · peer support
@@ -1420,6 +1686,40 @@ const styles = {
     margin: 0,
     letterSpacing: "-0.02em",
   },
+  homeBrandHeader: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    paddingTop: 4,
+    paddingBottom: 22,
+    gap: 4,
+  },
+  homeBrandLogo: {
+    width: 56,
+    height: 56,
+    objectFit: "contain",
+    borderRadius: "50%",
+    boxShadow: "0 3px 14px rgba(123, 91, 168, 0.15)",
+    marginBottom: 8,
+  },
+  homeBrandWordmark: {
+    fontFamily: "'Fraunces', serif",
+    fontSize: 22,
+    fontWeight: 600,
+    fontStyle: "italic",
+    color: "#3A2E4A",
+    margin: 0,
+    letterSpacing: "-0.015em",
+  },
+  homeBrandBy: {
+    fontFamily: "'Fraunces', serif",
+    fontSize: 9,
+    fontWeight: 500,
+    letterSpacing: "0.3em",
+    textTransform: "uppercase",
+    color: "#9B8FAB",
+    margin: "2px 0 0",
+  },
   greetingSub: {
     fontFamily: "'Fraunces', serif",
     fontSize: 16,
@@ -1517,6 +1817,23 @@ const styles = {
     fontWeight: 500,
     cursor: "pointer",
     fontFamily: "inherit",
+    flexShrink: 0,
+  },
+  zoomBtn: {
+    display: "block",
+    width: "100%",
+    padding: "13px 16px",
+    border: "none",
+    borderRadius: 12,
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: 600,
+    cursor: "pointer",
+    fontFamily: "inherit",
+    textAlign: "center",
+    textDecoration: "none",
+    letterSpacing: "0.01em",
+    boxSizing: "border-box",
   },
   checkInQ: {
     fontFamily: "'Fraunces', serif",
