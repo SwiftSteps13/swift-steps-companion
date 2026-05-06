@@ -125,9 +125,6 @@ By continuing, you acknowledge that iOSwiftie is a peer support tool only.</p>
 </div>
 
 <script>
-  // ⚠️ PASTE YOUR API KEY HERE — only in a text editor on your computer, never in chat
-  const API_KEY = "PASTE_YOUR_NEW_API_KEY_HERE";
-
   const SYSTEM = `You are iOSwiftie, a peer support companion for Swift Steps — a peer-led recovery and healing community for Swifties navigating sobriety, mental health, or just figuring it out. You were created by Julianne Griffin, Certified Peer Specialist and founder of Swift Steps.
 
 WHAT YOU ARE:
@@ -351,25 +348,24 @@ MEMBERSHIP INFO (share when relevant):
     container.scrollTop = container.scrollHeight;
   }
 
-  async function callAPI(messages) {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+  async function callBackend(messages) {
+    const res = await fetch("/api/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": API_KEY,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
-      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, system: SYSTEM, messages })
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages, system: SYSTEM })
     });
     const data = await res.json();
+    if (!res.ok) {
+      console.error("Backend error:", data);
+      throw new Error(data.error || "Backend error");
+    }
     return data.content?.map(b => b.text || "").join("") || "I'm here with you. Can you tell me more?";
   }
 
   async function sendWelcome() {
     loading = true; renderMessages();
     try {
-      const text = await callAPI([{ role: "user", content: "Please welcome me warmly to iOSwiftie." }]);
+      const text = await callBackend([{ role: "user", content: "Please welcome me warmly to iOSwiftie." }]);
       msgs = [{ role: "assistant", content: text }];
     } catch {
       msgs = [{ role: "assistant", content: "Hey, welcome. I'm iOSwiftie — your peer support companion from Swift Steps. I'm here to sit with you. No pressure, no expectations. How are you doing today? 🤍" }];
@@ -385,7 +381,7 @@ MEMBERSHIP INFO (share when relevant):
     input.value = ""; toggleSend();
     loading = true; renderMessages();
     try {
-      const text = await callAPI(msgs);
+      const text = await callBackend(msgs);
       msgs.push({ role: "assistant", content: text });
     } catch {
       msgs.push({ role: "assistant", content: "I'm still here with you — something went quiet on my end. Want to try again? 🤍" });
