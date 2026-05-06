@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import logo from "./logo.png";
 import { Send, Home, BookOpen, Calendar, Heart, Sparkles, ChevronLeft, AlertCircle, X } from "lucide-react";
 
 // ============================================================
