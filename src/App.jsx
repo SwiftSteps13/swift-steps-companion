@@ -9,7 +9,35 @@ import { Send, Home, BookOpen, Calendar, Heart, Sparkles, ChevronLeft, AlertCirc
 
 
 // Embedded brand logo
+// ============================================================
+// COHORT TIMING — auto-advances every Monday at midnight ET
+// Change COHORT_START_DATE only when starting a new cohort
+// ============================================================
+const COHORT_START_DATE = "2025-12-22"; // Monday of Debut Week 1
+const CURRICULUM_TOTAL_WEEKS = 55;
 
+const getCurriculumPosition = () => {
+  const start = new Date(COHORT_START_DATE + "T00:00:00");
+  const now = new Date();
+  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const weeksElapsed = Math.floor((now - start) / msPerWeek);
+
+  // Loop the curriculum: after week 55, restart at week 1
+  const cycleWeek = ((weeksElapsed % CURRICULUM_TOTAL_WEEKS) + CURRICULUM_TOTAL_WEEKS) % CURRICULUM_TOTAL_WEEKS;
+  const curriculumWeek = cycleWeek + 1; // 1-indexed (1 through 55)
+
+  // Map curriculum week to era + week-in-era
+  const eraId = Math.floor((curriculumWeek - 1) / 5); // 0 through 10
+  const weekInEra = ((curriculumWeek - 1) % 5) + 1; // 1 through 5
+
+  // Detect if this is the final week of the entire curriculum (Showgirl Week 5)
+  const isFinalWeek = curriculumWeek === CURRICULUM_TOTAL_WEEKS;
+
+  // Has the cohort completed at least one full cycle?
+  const hasCompletedCycle = weeksElapsed >= CURRICULUM_TOTAL_WEEKS;
+
+  return { eraId, weekInEra, curriculumWeek, isFinalWeek, hasCompletedCycle, weeksElapsed };
+};
 const ERAS = [
   { id: 0, name: "Debut", subtitle: "Beginning Again", color: "#8FB89E", emoji: "🌱", weeks: "1–5", themes: "permission to begin again, hidden pain, releasing the past, belonging" },
   { id: 1, name: "Fearless", subtitle: "Courage", color: "#E8C547", emoji: "💛", weeks: "6–10", themes: "courage with fear present, letting yourself be seen, trusting yourself, small daily bravery" },
@@ -714,8 +742,9 @@ const nextMeeting = () => {
 export default function App() {
   const [hasEntered, setHasEntered] = useState(false);
   const [tab, setTab] = useState("home");
-  const [eraId, setEraId] = useLocalState(STORAGE_KEYS.currentEra, 0); // start at Debut
-  const [weekInEra, setWeekInEra] = useLocalState("ss-week-in-era", 1);
+  const cohortPosition = getCurriculumPosition();
+  const [eraId, setEraId] = useState(cohortPosition.eraId);
+  const [weekInEra, setWeekInEra] = useState(cohortPosition.weekInEra);
   const [streak, setStreak] = useLocalState(STORAGE_KEYS.streak, 0);
   const [lastCheckIn, setLastCheckIn] = useLocalState(STORAGE_KEYS.lastCheckIn, null);
   const [checkIns, setCheckIns] = useLocalState(STORAGE_KEYS.checkIns, []);
@@ -963,6 +992,16 @@ function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setSt
       <div style={{ marginBottom: 28 }}>
         <p style={styles.greeting}>hi. you're here.</p>
         <p style={styles.greetingSub}>that's enough for right now.</p>
+        {era.name === "Showgirl" && weekInEra === 5 && (
+          <div style={{ marginTop: 16, padding: "14px 16px", background: "linear-gradient(135deg, #D4A57422 0%, #E8A4B822 100%)", borderRadius: 12, border: "1px solid #D4A57440" }}>
+            <p style={{ fontFamily: "'Fraunces', serif", fontSize: 14, fontWeight: 600, color: "#3A2E4A", margin: "0 0 4px", letterSpacing: "-0.01em" }}>
+              🎭 you've come full circle
+            </p>
+            <p style={{ fontFamily: "'Fraunces', serif", fontSize: 13, fontStyle: "italic", color: "#4A3E5A", margin: 0, lineHeight: 1.5 }}>
+              this is the final week of the journey. take a breath. honor what you've walked through. monday, we begin again.
+            </p>
+          </div>
+        )}
       </div>
 
       <div onClick={() => setTab("prompts")} style={{ ...styles.eraCard, background: `linear-gradient(135deg, ${era.color}22 0%, ${era.color}08 100%)`, borderLeft: `3px solid ${era.color}` }}>
