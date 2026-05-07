@@ -10,6 +10,117 @@ import { Send, Home, BookOpen, Calendar, Heart, Sparkles, ChevronLeft, AlertCirc
 
 // Embedded brand logo
 // ============================================================
+// === KEY DATES — for auto-counting yearly anniversaries ===
+const JULIANNE_SOBRIETY_DATE = "2016-09-01";
+const SWIFT_STEPS_FOUNDED_DATE = "2024-03-28";
+
+const yearsSince = (startDateStr) => {
+  const start = new Date(startDateStr + "T12:00:00");
+  const now = new Date();
+  let years = now.getFullYear() - start.getFullYear();
+  const monthDiff = now.getMonth() - start.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < start.getDate())) {
+    years--;
+  }
+  return years;
+};
+
+const getRecurringBanners = () => {
+  const julianneYears = yearsSince(JULIANNE_SOBRIETY_DATE);
+  const swiftStepsYears = yearsSince(SWIFT_STEPS_FOUNDED_DATE);
+  const currentYear = new Date().getFullYear();
+
+  return [
+    currentYear === 2026
+      ? {
+          date: `${currentYear}-09-01`,
+          emoji: "⭐",
+          title: "10 years sober this week",
+          message: "Ten years of getting back up. Ten years of choosing to stay instead of disappear.\n\nSwift Steps exists because somebody kept beginning again even when it was hard, messy, inconvenient, exhausting, or didn't look the way people thought recovery was \"supposed\" to look.\n\nWe don't throw people away here. We don't make people start over from zero. We pick up from here.\n\nAnd honestly? Ten years is proof that healing doesn't have to look perfect to be real. 🩵",
+        }
+      : {
+          date: `${currentYear}-09-01`,
+          emoji: "⭐",
+          title: `${julianneYears} years sober for Julianne this week`,
+          message: "Another year of getting back up. Another year of choosing to stay instead of disappear.\n\nSwift Steps exists because somebody kept beginning again. We don't throw people away here. We don't make people start over from zero. We pick up from here.\n\nHealing doesn't have to look perfect to be real. 🩵",
+        },
+    {
+      date: `${currentYear}-03-28`,
+      emoji: "💋",
+      title: `Swift Steps turns ${swiftStepsYears} this week`,
+      message: "On March 28th, 2024, we had our first meeting. No grand opening, no fanfare. Just people showing up to find out if a recovery space could feel different.\n\nIt did. It does.\n\nThank you for being part of what this is becoming. Whether you've been here since the first meeting or this is your first week — you're the reason it works. 🩵",
+    },
+    {
+      date: `${currentYear}-12-13`,
+      emoji: "🎂",
+      title: "Taylor's birthday this week",
+      message: "The person whose music accidentally became the background soundtrack to so many people surviving their lives.\n\nA lot of us found language for things we didn't know how to explain yet through these songs. Grief. Rage. Longing. Starting over. Becoming someone new.\n\nSo today feels like a good day to play the song that carried you through something and remember how far you've actually come. 🪩",
+    },
+    {
+      date: `${currentYear}-01-10`,
+      emoji: "💛",
+      title: "Andrea Swift's birthday this week",
+      message: "And honestly… this one always hits a little differently.\n\nThe people loving someone through addiction, mental health struggles, relapse, grief, healing, all of it… they carry things quietly that most people never fully see.\n\nTo the moms, caregivers, safe people, and \"I'm not giving up on you\" people in this community: we see you too. Loving somebody through hard seasons takes a kind of strength that rarely gets talked about enough.",
+    },
+    {
+      date: `${currentYear}-03-05`,
+      emoji: "🤍",
+      title: "Scott Swift's birthday this week",
+      message: "The steady parent energy. The \"I'm still here\" energy.\n\nA lot of people in this community know what it feels like to not have consistency. So when somebody does show up calmly, reliably, safely… it matters more than people realize.\n\nToday's for the parents, mentors, friends, and safe humans who kept answering the phone. 🩶",
+    },
+    {
+      date: `${currentYear}-03-11`,
+      emoji: "💙",
+      title: "Austin Swift's birthday this week",
+      message: "The sibling perspective always feels important because siblings see everything differently.\n\nSometimes they're protecting. Sometimes they're confused. Sometimes they're carrying their own hurt while trying to love someone through theirs.\n\nSo today feels like a good day to acknowledge the siblings in this community too. The ones who stayed close, the ones rebuilding relationships, and the ones still figuring out where they fit in the story.",
+    },
+    {
+      date: `${currentYear}-10-05`,
+      emoji: "🏈",
+      title: "Travis Kelce's birthday this week",
+      message: "A reminder that being fully seen doesn't always have to be embarrassing or dangerous.\n\nSome of us got really good at hiding. Hiding symptoms. Hiding feelings. Hiding relapse. Hiding needs. Hiding ourselves.\n\nMaybe today is just a tiny reminder that you're allowed to take up space without apologizing for it. ✨",
+    },
+  ];
+};
+
+const HOLIDAYS = [
+  { date: "2026-03-17", emoji: "🍀", title: "St. Patrick's Day this week", message: "Today is built around drinking — green beer, parades, the whole thing. You don't owe anyone a performance. You can name what's loud about it and still choose how you move through it. The body doubling room is open if you want company without the noise." },
+  { date: "2026-04-05", emoji: "🌸", title: "Easter weekend", message: "Easter can carry a lot — religion you've left or are returning to, family gatherings, brunch culture, complicated memories. You're allowed to come to today on your own terms. You know what works for you." },
+  { date: "2026-05-04", emoji: "🌱", title: "Mental Health Awareness Month", message: "May is for naming what we carry. The fact that you're here, doing this work, is the awareness. Your story counts even when no one's posting about it." },
+  { date: "2026-05-05", emoji: "🌶️", title: "Cinco de Mayo this week", message: "Another holiday wrapped in drinking culture. You've made it through harder days than this one. You don't have to explain why you're not at the bar. Your peace is yours to protect." },
+  { date: "2026-05-10", emoji: "🤍", title: "Mother's Day weekend", message: "Whatever your relationship with your mother is — close, distant, complicated, grieved, longed for, healed, still healing — your feelings about today are valid. There's no right way to do this day. Come sit with us. We have a meeting for this." },
+  { date: "2026-05-25", emoji: "🇺🇸", title: "Memorial Day weekend", message: "Grief, gatherings, drinking culture all in one weekend. You can name what's loud and still stay yourself. You've made it through harder. The body doubling room is open whenever." },
+  { date: "2026-06-01", emoji: "🌈", title: "Pride Month", message: "Pride is celebration AND it's heavy — identity, family rejection, party culture, the cost of being out. Whoever you are, however you're showing up to this month, you belong here. You don't have to choose between joy and honesty." },
+  { date: "2026-06-19", emoji: "✊🏾", title: "Juneteenth this week", message: "A day that holds liberation and the work that's still not done. Rest is part of the work too. Whatever this day means to you, you're allowed to honor it your way." },
+  { date: "2026-06-21", emoji: "🤍", title: "Father's Day weekend", message: "Whatever your relationship with your father is — close, distant, complicated, grieved, absent, healed, still healing — your feelings about today are valid. There's no right way to do this day. Come sit with us. We have a meeting for this." },
+  { date: "2026-07-04", emoji: "🎆", title: "Fourth of July weekend", message: "Fireworks, BBQs, drinking everywhere. You don't owe anyone a beer in your hand to belong. You can choose how you celebrate, who you celebrate with, or whether you celebrate at all. Your recovery is yours to define." },
+  { date: "2026-09-07", emoji: "🌟", title: "Recovery Month", message: "September honors what we're doing every day. Not the polished version — the real one. The slipping and returning. The quiet work. The fact that you're still here. That's the whole thing." },
+  { date: "2026-10-31", emoji: "🎃", title: "Halloween weekend", message: "Costumes, parties, drinking pressure, the whole thing. You can show up however feels true — out, dressed up, staying in, or skipping it entirely. You don't have to be in the chaos to belong. You know what you need." },
+  { date: "2026-11-25", emoji: "🍂", title: "Thanksgiving week", message: "The day before Thanksgiving is statistically the heaviest drinking night of the year. Then comes the family dinner. Then the leftovers and the lingering. You can move through this whole week one moment at a time. You're allowed to leave early. You're allowed to skip it. You're allowed to stay and just listen." },
+  { date: "2026-12-24", emoji: "❄️", title: "Christmas Eve & Christmas Day", message: "Family, grief, religion, gifts, expectations, drinks at every corner. Whatever this holiday means to you — joy, dread, neutral, complicated — you get to define how you move through it. You don't have to perform recovery for anyone. Just stay yourself." },
+  { date: "2026-12-31", emoji: "🥂", title: "New Year's Eve & Day", message: "The biggest drinking night of the year, followed by a day full of resolutions and pressure to reinvent yourself. You don't owe anyone a transformation. You're already doing the work. Take this weekend on your terms." },
+  { date: "2027-01-18", emoji: "✊🏾", title: "MLK Day this week", message: "A day that asks us to remember what's worth fighting for, and that the fight is long. Recovery is part of how you stay alive to keep showing up. Rest is resistance too." },
+  { date: "2027-02-14", emoji: "💔", title: "Valentine's Day weekend", message: "Whether you're partnered, single, grieving someone, or somewhere in between, this day can hit hard. Love isn't only romantic. The love you're building with yourself counts. You're already worthy of the kind of love you're learning to give." },
+];
+
+const getActiveHolidays = () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const dayOfWeek = today.getDay();
+  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const mondayOfWeek = new Date(today);
+  mondayOfWeek.setDate(today.getDate() - daysFromMonday);
+  mondayOfWeek.setHours(0, 0, 0, 0);
+  const sundayOfWeek = new Date(mondayOfWeek);
+  sundayOfWeek.setDate(mondayOfWeek.getDate() + 6);
+  sundayOfWeek.setHours(23, 59, 59, 999);
+  const allBanners = [...HOLIDAYS, ...getRecurringBanners()];
+  return allBanners.filter((h) => {
+    const date = new Date(h.date + "T12:00:00");
+    return date >= mondayOfWeek && date <= sundayOfWeek;
+  });
+};
+
 // COHORT TIMING — auto-advances every Monday at midnight ET
 // Change COHORT_START_DATE only when starting a new cohort
 // ============================================================
@@ -961,6 +1072,53 @@ const welcomeStyles = {
 // ============================================================
 // HOME, CHAT, PROMPTS, PROGRESS, TAB BAR
 // ============================================================
+function HolidayBanner({ holidays, eraColor }) {
+  if (!holidays || holidays.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: 24, display: "flex", flexDirection: "column", gap: 12 }}>
+      {holidays.map((h, i) => (
+        <div
+          key={i}
+          style={{
+            padding: "14px 16px",
+            background: `linear-gradient(135deg, ${eraColor}15 0%, ${eraColor}05 100%)`,
+            borderRadius: 12,
+            border: `1px solid ${eraColor}30`,
+            borderLeft: `3px solid ${eraColor}`,
+          }}
+        >
+          <p
+            style={{
+              fontFamily: "'Fraunces', serif",
+              fontSize: 14,
+              fontWeight: 600,
+              color: "#3A2E4A",
+              margin: "0 0 6px",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            {h.emoji} {h.title}
+          </p>
+          <p
+            style={{
+              fontSize: 13,
+              color: "#4A3E5A",
+              margin: 0,
+              lineHeight: 1.6,
+              fontStyle: "italic",
+              fontFamily: "'Fraunces', serif",
+              whiteSpace: "pre-line",
+            }}
+          >
+            {h.message}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setStreak, lastCheckIn, setLastCheckIn, checkIns, setCheckIns, setTab }) {
   const todayInfo = todayMeetings();
   const upcomingToday = todayInfo.meetings.filter((m) => !m.isPast);
@@ -1003,8 +1161,9 @@ function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setSt
           </div>
         )}
       </div>
-
-      <div onClick={() => setTab("prompts")} style={{ ...styles.eraCard, background: `linear-gradient(135deg, ${era.color}22 0%, ${era.color}08 100%)`, borderLeft: `3px solid ${era.color}` }}>
+      <HolidayBanner holidays={getActiveHolidays()} eraColor={era.color} />
+   
+        <div onClick={() => setTab("prompts")} style={{ ...styles.eraCard, background: `linear-gradient(135deg, ${era.color}22 0%, ${era.color}08 100%)`, borderLeft: `3px solid ${era.color}` }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div style={{ flex: 1 }}>
             <p style={styles.eraLabel}>currently sitting in</p>
