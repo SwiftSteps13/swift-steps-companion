@@ -5,45 +5,221 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>BACKSTAGE with The Sober Curator | Swift Steps®</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  body { margin: 0; padding: 16px; background: transparent; font-family: Arial, Helvetica, sans-serif; }
-  a { color: #3b82f6; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Jost', Arial, sans-serif; background: #fdf6f7; color: #43273b; line-height: 1.65; }
+  .serif { font-family: 'Cormorant Garamond', Georgia, serif; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 0 22px; }
+
+  /* Announcement marquee */
+  .bar { background: #0a0a0a; overflow: hidden; white-space: nowrap; padding: 10px 0; border-bottom: 2px solid #2563eb; }
+  .bar span { display: inline-block; color: #93c5fd; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; animation: slide 28s linear infinite; }
+  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .bar span { animation: none; } }
+
+  /* Hero */
+  .hero { text-align: center; padding: 52px 0 40px; }
+  .eyebrow { font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #b0447c; font-weight: 600; margin-bottom: 16px; }
+  h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 44px; line-height: 1.12; font-weight: 600; color: #3d1f36; }
+  h1 em { font-style: italic; color: #b0447c; }
+  .hero p { max-width: 540px; margin: 20px auto 0; font-size: 16.5px; }
+  .chips { margin-top: 24px; font-size: 13px; color: #8a5a7c; }
+  .chips b { color: #3d1f36; }
+
+  /* Section headers */
+  .section { padding: 44px 0; }
+  .kicker { text-align: center; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: #b0447c; font-weight: 600; margin-bottom: 8px; }
+  h2 { font-family: 'Cormorant Garamond', Georgia, serif; text-align: center; font-size: 33px; font-weight: 600; color: #3d1f36; margin-bottom: 28px; }
+  h2 em { font-style: italic; color: #b0447c; }
+
+  /* Two worlds cards */
+  .card { border-radius: 18px; padding: 30px 28px; margin-bottom: 22px; }
+  .card h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px; font-weight: 700; margin-bottom: 2px; }
+  .card .sub { font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 16px; }
+  .card ul { list-style: none; }
+  .card li { padding: 7px 0 7px 26px; position: relative; font-size: 15px; }
+  .card li::before { content: '✦'; position: absolute; left: 2px; }
+  .ss { background: #fbe9ef; border: 1px solid #f3c6d8; color: #4a2540; }
+  .ss h3 { color: #a4336f; }
+  .ss .sub { color: #b0447c; }
+  .ss li::before { color: #d873a8; }
+  .bs { background: #050505; border: 1px solid #1d4ed8; color: #dbeafe; }
+  .bs h3 { color: #ffffff; letter-spacing: 1px; }
+  .bs .sub { color: #60a5fa; }
+  .bs li::before { color: #3b82f6; }
+  .bs li b { color: #93c5fd; }
+  .bs .note { margin-top: 14px; font-size: 13px; color: #94a3b8; }
+  .value { text-align: center; margin-top: 4px; font-size: 15px; }
+  .value b { color: #a4336f; }
+
+  /* Steps */
+  .steps-bg { background: #ffffff; border-top: 1px solid #f3d9e4; border-bottom: 1px solid #f3d9e4; }
+  .step { display: flex; gap: 18px; margin-bottom: 26px; align-items: flex-start; }
+  .step:last-child { margin-bottom: 0; }
+  .num { flex: 0 0 44px; height: 44px; border-radius: 50%; background: #0a0a0a; color: #60a5fa; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 1px solid #2563eb; }
+  .step h4 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 21px; font-weight: 700; color: #3d1f36; margin-bottom: 4px; }
+  .step p { font-size: 15px; }
+  .highlight { background: #fbe9ef; border-radius: 10px; padding: 2px 7px; color: #a4336f; font-weight: 500; white-space: nowrap; }
+
+  /* FAQ */
+  details { background: #ffffff; border: 1px solid #f3d9e4; border-radius: 12px; margin-bottom: 12px; padding: 16px 20px; }
+  summary { cursor: pointer; font-weight: 500; font-size: 15.5px; color: #3d1f36; list-style: none; position: relative; padding-right: 26px; }
+  summary::after { content: '+'; position: absolute; right: 0; top: 0; color: #b0447c; font-size: 20px; line-height: 1; }
+  details[open] summary::after { content: '–'; }
+  details p { margin-top: 10px; font-size: 14.5px; color: #5c3a52; }
+
+  /* Founder quote */
+  .quote { text-align: center; padding: 10px 0 0; }
+  .quote blockquote { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 25px; font-style: italic; font-weight: 500; color: #3d1f36; max-width: 520px; margin: 0 auto 14px; line-height: 1.35; }
+  .quote cite { font-style: normal; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: #8a5a7c; }
+
+  /* Closing */
+  .closing { text-align: center; background: #050505; border-radius: 20px; border: 1px solid #1d4ed8; padding: 40px 28px; margin: 10px 0 30px; }
+  .closing h2 { color: #ffffff; margin-bottom: 10px; }
+  .closing h2 em { color: #60a5fa; }
+  .closing p { color: #bfdbfe; font-size: 15.5px; max-width: 460px; margin: 0 auto; }
+  .closing .mail { margin-top: 18px; font-size: 14px; }
+  .closing a { color: #60a5fa; }
+
+  footer { text-align: center; font-size: 11px; color: #9a7a90; padding: 0 22px 40px; line-height: 1.6; max-width: 620px; margin: 0 auto; }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 34px; }
+    h2 { font-size: 27px; }
+  }
 </style>
 </head>
 <body>
 
-<div style="max-width:640px;margin:0 auto;background:#000000;border:1px solid #1d4ed8;border-radius:16px;padding:34px 28px;color:#e5e7eb;line-height:1.65;box-sizing:border-box;">
-
-  <div style="text-align:center;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#3b82f6;margin-bottom:14px;font-weight:bold;">Now Open ✦ Included With Your Membership</div>
-
-  <h2 style="text-align:center;font-size:30px;margin:0 0 4px 0;color:#ffffff;letter-spacing:2px;text-transform:uppercase;">Backstage</h2>
-
-  <p style="text-align:center;font-size:14px;color:#93c5fd;margin:0 0 24px 0;letter-spacing:1px;">with The Sober Curator · The Sober Culture Club</p>
-
-  <p style="margin:0 0 16px 0;font-size:15px;">Your Swift Steps® membership now comes with a second community. BACKSTAGE is The Sober Curator's members-only culture club. It just opened its doors and it is normally $19/month. As a paying Swift Steps® member, you walk in as a founding member <strong style="color:#ffffff;">completely free for the life of your membership</strong>. That's a $228/year value included with what you already pay.</p>
-
-  <div style="background:#0a0a0a;border:1px solid #1e40af;border-radius:12px;padding:18px 20px;margin:0 0 20px 0;font-size:14px;">
-    <p style="margin:0 0 10px 0;">🎬 <strong style="color:#3b82f6;">Media Night:</strong> books, TV, film, podcasts and the headlines worth talking about, with live author and creator Q&amp;As</p>
-    <p style="margin:0 0 10px 0;">🎨 <strong style="color:#3b82f6;">Studio Night:</strong> journaling, collaging, painting and hands-on creative time. Art skills not required</p>
-    <p style="margin:0 0 10px 0;">💡 <strong style="color:#3b82f6;">Edutainment Night:</strong> expert-led sessions with MasterClass energy, but make it sober</p>
-    <p style="margin:0;font-size:13px;color:#9ca3af;">Three nights every month minimum, plus surprise Bonus Nights. Every broadcast is recorded so you never miss one. Members also get a quarterly digital zine.</p>
-  </div>
-
-  <h3 style="font-size:17px;color:#ffffff;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:1px;">How you get your code</h3>
-
-  <p style="margin:0 0 12px 0;font-size:15px;"><strong style="color:#93c5fd;">In your complimentary first month?</strong> You're almost there. When your free month ends and your first payment goes through, you're officially a paying member. That's the moment your private BACKSTAGE registration code is sent to the email on your account. Watch your inbox.</p>
-
-  <p style="margin:0 0 12px 0;font-size:15px;"><strong style="color:#93c5fd;">Already a paying member?</strong> Your code has already been sent. Search BACKSTAGE in your inbox if you don't see it.</p>
-
-  <p style="margin:0 0 20px 0;font-size:15px;">Click the link in your email, register and you're in. It takes about a minute and your membership registers as complimentary automatically. Can't find your email? Reach out at <a href="mailto:info@swiftsteps.org">info@swiftsteps.org</a> and we'll resend it.</p>
-
-  <div style="background:#0a1225;border-left:4px solid #2563eb;border-radius:0 8px 8px 0;padding:12px 16px;margin:0 0 24px 0;font-size:13px;color:#bfdbfe;">Your registration code is exclusive to paying Swift Steps® members. Please don't share it outside the community. Friends who want in can start their free month at swiftsteps.org/join.</div>
-
-  <p style="text-align:center;font-style:italic;color:#93c5fd;margin:0 0 24px 0;font-size:15px;">Your healing era comes with a plus-one. ✨</p>
-
-  <p style="text-align:center;font-size:11px;color:#6b7280;margin:0;line-height:1.5;">Swift Steps® is not endorsed by or affiliated with TAS Rights Management, Taylor Swift, or their affiliated entities.<br>Swift Steps® is peer support, not therapy or medical treatment. In crisis? Call or text 988.</p>
-
+<div class="bar" aria-hidden="true">
+  <span>Now Open ✦ BACKSTAGE with The Sober Curator ✦ Free for paid Swift Steps® members ✦ Your private invite arrives with your first payment ✦&nbsp; Now Open ✦ BACKSTAGE with The Sober Curator ✦ Free for paid Swift Steps® members ✦ Your private invite arrives with your first payment ✦&nbsp;</span>
 </div>
+
+<section class="hero wrap">
+  <div class="eyebrow">Member Perk · Now Open</div>
+  <h1>Two communities.<br>One membership.<br><em>Both Yours.</em></h1>
+  <p>As a paying Swift Steps® member you receive complimentary access to BACKSTAGE: The Sober Curator's brand-new Sober Culture Club, for the entire life of your membership.</p>
+  <div class="chips">A <b>$228/year value</b>, included free · No code to buy · Your invite arrives by email</div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="kicker">Everything Included</div>
+    <h2>One membership. <em>Both</em> worlds.</h2>
+
+    <div class="card ss">
+      <h3>Swift Steps®</h3>
+      <div class="sub">Your recovery home base</div>
+      <ul>
+        <li>The Recovering Through the Eras® curriculum: 12 eras of healing</li>
+        <li>10+ live virtual meetings every week. Cameras optional, listening counts</li>
+        <li>Speak Now Tuesdays, Saturday Surprise Song Sessions, Book Club, Craft Socials</li>
+        <li>All pathways welcome. Harm reduction welcome. Abstinence not required</li>
+      </ul>
+    </div>
+
+    <div class="card bs">
+      <h3>BACKSTAGE</h3>
+      <div class="sub">with The Sober Curator · The Sober Culture Club</div>
+      <ul>
+        <li><b>Media Night:</b> books, TV, film, podcasts and the headlines worth talking about, with live author Q&amp;As</li>
+        <li><b>Studio Night:</b> journaling, collaging, painting and hands-on creative time. Art skills not required</li>
+        <li><b>Edutainment Night:</b> expert-led sessions with MasterClass energy, but make it sober</li>
+        <li>Surprise Bonus Nights, a members-only quarterly zine and every broadcast recorded</li>
+      </ul>
+      <p class="note">All events are virtual. Join from anywhere in the world, wherever you are on your path.</p>
+    </div>
+
+    <p class="value">BACKSTAGE is normally $19/month on its own. Yours is <b>included free, for the life of your membership</b>.</p>
+  </div>
+</section>
+
+<section class="section steps-bg">
+  <div class="wrap">
+    <div class="kicker">How It Works</div>
+    <h2>Three steps. <em>Two communities.</em></h2>
+
+    <div class="step">
+      <div class="num">1</div>
+      <div>
+        <h4>Enjoy your free month</h4>
+        <p>Your complimentary first month gives you full access to meetings, the community app and the eras curriculum. You won't be charged until day 31.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">2</div>
+      <div>
+        <h4>Your first payment unlocks the perk</h4>
+        <p>The moment your free month ends and your first payment goes through, you're officially a paying member. <span class="highlight">That's when your code is sent</span> to the email on your account. Watch your inbox.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="num">3</div>
+      <div>
+        <h4>Register free in about a minute</h4>
+        <p>Click the private registration link in your email and sign up. No code to enter. Your BACKSTAGE membership registers as complimentary automatically.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <div class="kicker">Questions, Answered</div>
+    <h2>The details</h2>
+
+    <details>
+      <summary>I'm already a paying member. Do I get this?</summary>
+      <p>Yes! This perk is for all current paying members, not just new ones. Your code has already been sent. Search "BACKSTAGE" in your inbox, or reach out at info@swiftsteps.org and we'll resend it.</p>
+    </details>
+
+    <details>
+      <summary>I'm still in my free first month. When do I get my invite?</summary>
+      <p>Your private registration link arrives by email when your first payment goes through at the end of your free month. Think of it as a little welcome gift for making it official.</p>
+    </details>
+
+    <details>
+      <summary>How long does the free BACKSTAGE membership last?</summary>
+      <p>For the life of your Swift Steps® membership. As long as your membership stays active and in good standing, BACKSTAGE stays free.</p>
+    </details>
+
+    <details>
+      <summary>What happens if I cancel my Swift Steps® membership?</summary>
+      <p>Your free BACKSTAGE membership ends when your Swift Steps® membership does. If you'd like to keep it going, you can subscribe with The Sober Curator directly.</p>
+    </details>
+
+    <details>
+      <summary>Can I share my registration link?</summary>
+      <p>Please don't. The link is exclusive to paying Swift Steps® members. Friends who want in can start their own free month at swiftsteps.org/join.</p>
+    </details>
+  </div>
+</section>
+
+<section class="section quote wrap">
+  <blockquote>&ldquo;Recovery is better with company. Now your membership comes with two communities cheering you on.&rdquo;</blockquote>
+  <cite>Julianne Griffin · Certified Peer Specialist · Founder, Swift Steps®</cite>
+</section>
+
+<section class="wrap">
+  <div class="closing">
+    <h2>Your healing era comes with a <em>plus-one</em>.</h2>
+    <p>You already did the hard part. Now go claim the fun part. Watch your inbox for your private BACKSTAGE invite.</p>
+    <p class="mail">Can't find your email? <a href="mailto:info@swiftsteps.org">info@swiftsteps.org</a></p>
+  </div>
+</section>
+
+<footer>
+  SWIFTIE® and SWIFTIES® are registered trademarks owned by TAS Rights Management LLC.
+  Swift Steps® is not endorsed by or affiliated with TAS Rights Management, Taylor Swift, or their affiliated entities.<br><br>
+  Swift Steps® is peer support, not therapy or medical treatment. Facilitators are Certified Peer Specialists, not licensed clinicians.
+  If you're in crisis, call or text 988 (Suicide &amp; Crisis Lifeline) or contact the SAMHSA National Helpline at 1-800-662-4357.<br><br>
+  Swift Steps® is a trademark of Blank Space Recovery LLC. The Sober Curator is a trademark of The Sober Curator Inc. All rights reserved.
+</footer>
 
 </body>
 </html>
