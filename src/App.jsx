@@ -1464,66 +1464,236 @@ function PromptsView({ era, eraId, setEraId, weekInEra }) {
   );
 }
 
+// =====================================================================
+// COMMIT #1: STEPS PAGE ROADMAP WITH NOW PLAYING SIGN
+// =====================================================================
+// Replaces ProgressView with a vinyl records roadmap
+// Current era gets an illuminated "NOW PLAYING" light box below it
+// =====================================================================
+//
+// TO DEPLOY:
+// 1. Go to: github.com/SwiftSteps13/swift-steps-companion/edit/main/src/App.jsx
+// 2. Cmd+F search for: function ProgressView
+// 3. Select from `function ProgressView(...) {` down to its closing `}`
+//    (about 63 lines — ends just before `function TabBar`)
+// 4. Delete the selection
+// 5. Paste the code below
+// 6. Commit changes
+// 7. Wait 60-90 seconds for Vercel to build
+// 8. Check swift-steps-companion.vercel.app → Steps tab
+// =====================================================================
+
+
 function ProgressView({ era, eraId, weekInEra, streak, checkIns }) {
+  useEffect(() => {
+    if (document.getElementById("vinyl-pulse-css")) return;
+    const style = document.createElement("style");
+    style.id = "vinyl-pulse-css";
+    style.textContent = `
+      @keyframes vinylPulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.03); opacity: 0.95; }
+      }
+      @keyframes signGlow {
+        0%, 100% { filter: drop-shadow(0 0 12px rgba(255,180,80,0.6)) drop-shadow(0 0 20px rgba(255,150,50,0.35)); }
+        50% { filter: drop-shadow(0 0 18px rgba(255,190,90,0.75)) drop-shadow(0 0 28px rgba(255,160,60,0.45)); }
+      }
+    `;
+    document.head.appendChild(style);
+  }, []);
+
   return (
     <div style={{ padding: "20px 22px 100px" }}>
-      <div style={{ marginBottom: 28 }}>
-        <p style={styles.greeting}>your steps</p>
-        <p style={styles.greetingSub}>quietly, consistently, on your own terms.</p>
-      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+        {ERAS.map((e, i) => {
+          const isCurrent = i === eraId;
+          const isPast = i < eraId;
+          const isFuture = i > eraId;
+          const isLast = i === ERAS.length - 1;
+          const vinylSize = isCurrent ? 100 : 72;
+          const opacity = isFuture ? 0.35 : 1;
+          const fillColor = isFuture ? "#D4CFC4" : e.color;
 
-      <div style={{ ...styles.statCard, background: `linear-gradient(135deg, ${era.color}22, ${era.color}08)` }}>
-        <p style={styles.statLabel}>check-in streak</p>
-        <p style={{ ...styles.statBig, color: era.color }}>
-          {streak}<span style={{ fontSize: 16, fontWeight: 400, color: "#6B6B6B", marginLeft: 6 }}>{streak === 1 ? "day" : "days"}</span>
-        </p>
-        <p style={{ fontSize: 12, color: "#6B6B6B", marginTop: 2 }}>
-          {streak === 0 ? "start whenever you want." : "you don't have to be perfect to keep going."}
-        </p>
-      </div>
+          return (
+            <div key={e.id} style={{ position: "relative" }}>
+              {/* Connecting line to next era */}
+              {!isLast && (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: isCurrent ? 49 : 35,
+                    top: vinylSize + (isCurrent ? 68 : 8),
+                    width: 2,
+                    height: isCurrent ? 20 : 44,
+                    background: isFuture ? "#EDE6DC" : `linear-gradient(180deg, ${e.color}80, ${ERAS[i + 1].color}80)`,
+                    zIndex: 0,
+                  }}
+                />
+              )}
 
-      <div style={styles.section}>
-        <p style={styles.sectionLabel}>era progress</p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
-          {ERAS.map((e, i) => {
-            const isCurrent = i === eraId;
-            const isPast = i < eraId;
-            return (
-              <div key={e.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
-                background: isCurrent ? `${e.color}18` : "transparent", borderRadius: 10,
-                border: isCurrent ? `1px solid ${e.color}50` : "1px solid transparent", opacity: isPast ? 0.6 : 1 }}>
-                <div style={{ width: 24, height: 24, borderRadius: "50%", background: isPast || isCurrent ? e.color : "#EDE6DC",
-                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#fff", flexShrink: 0 }}>
-                  {isPast ? "✓" : isCurrent ? "•" : ""}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 18,
+                  padding: "12px 0",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                {/* Vinyl record + NOW PLAYING sign column */}
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0 }}>
+                  {/* Vinyl record SVG */}
+                  <div
+                    style={{
+                      width: vinylSize,
+                      height: vinylSize,
+                      opacity,
+                      animation: isCurrent ? "vinylPulse 3s ease-in-out infinite" : "none",
+                      filter: isCurrent ? `drop-shadow(0 4px 16px ${e.color}55)` : "none",
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    <svg viewBox="0 0 100 100" width="100%" height="100%">
+                      <circle cx="50" cy="50" r="49" fill={fillColor} />
+                      {[46, 42, 38, 34, 30, 26, 22, 18].map((r) => (
+                        <circle key={r} cx="50" cy="50" r={r} fill="none" stroke={isFuture ? "#B8B3A6" : "rgba(0,0,0,0.15)"} strokeWidth="0.5" />
+                      ))}
+                      <circle cx="50" cy="50" r="14" fill={isFuture ? "#EDE6DC" : "#FAF6F0"} />
+                      <circle cx="50" cy="50" r="2" fill={isFuture ? "#B8B3A6" : "#2D2D2D"} />
+                    </svg>
+                  </div>
+
+                  {/* NOW PLAYING illuminated light box (current era only) */}
+                  {isCurrent && (
+                    <div
+                      style={{
+                        animation: "signGlow 2.5s ease-in-out infinite",
+                        marginTop: 4,
+                      }}
+                    >
+                      <svg viewBox="0 0 130 42" width="130" height="42">
+                        {/* Wooden frame (bottom base with slight shadow) */}
+                        <rect x="0" y="30" width="130" height="10" rx="1" fill="#6B4423" />
+                        <rect x="2" y="32" width="126" height="6" rx="1" fill="#8B5A2B" />
+
+                        {/* Wooden frame (top/back) */}
+                        <rect x="4" y="2" width="122" height="34" rx="3" fill="#5C3A1E" />
+                        <rect x="6" y="4" width="118" height="30" rx="2" fill="#7A4E28" />
+
+                        {/* Amber glowing panel */}
+                        <defs>
+                          <linearGradient id="amberGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#FFC65C" />
+                            <stop offset="50%" stopColor="#FFB347" />
+                            <stop offset="100%" stopColor="#F5A030" />
+                          </linearGradient>
+                          <filter id="innerGlow">
+                            <feGaussianBlur stdDeviation="1.5" />
+                          </filter>
+                        </defs>
+                        <rect x="10" y="8" width="110" height="22" rx="1.5" fill="url(#amberGlow)" />
+
+                        {/* Inner highlight for extra glow */}
+                        <rect x="12" y="10" width="106" height="4" rx="1" fill="rgba(255,255,255,0.35)" />
+
+                        {/* NOW PLAYING text */}
+                        <text
+                          x="65"
+                          y="24"
+                          textAnchor="middle"
+                          fontFamily="'Fraunces', Georgia, serif"
+                          fontSize="10"
+                          fontWeight="700"
+                          fill="#3A2410"
+                          letterSpacing="1.2"
+                        >
+                          NOW PLAYING
+                        </text>
+                      </svg>
+                    </div>
+                  )}
                 </div>
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 15, fontWeight: 500 }}>{e.emoji} {e.name}</p>
-                  <p style={{ margin: 0, fontSize: 11, color: "#6B6B6B" }}>
-                    {isCurrent ? `week ${weekInEra} of 5 · ${e.subtitle}` : e.subtitle}
+
+                {/* Era info */}
+                <div style={{ flex: 1, opacity: isFuture ? 0.55 : 1, paddingTop: isCurrent ? 8 : 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2, flexWrap: "wrap" }}>
+                    <p
+                      style={{
+                        fontFamily: "'Fraunces', serif",
+                        fontSize: isCurrent ? 22 : 17,
+                        fontWeight: isCurrent ? 600 : 500,
+                        color: "#2D2D2D",
+                        margin: 0,
+                        letterSpacing: "-0.02em",
+                        lineHeight: 1.1,
+                      }}
+                    >
+                      {e.emoji} {e.name}
+                    </p>
+                    {isPast && (
+                      <span
+                        style={{
+                          fontSize: 11,
+                          color: e.color,
+                          fontWeight: 600,
+                          background: `${e.color}18`,
+                          padding: "2px 8px",
+                          borderRadius: 999,
+                        }}
+                      >
+                        ✓
+                      </span>
+                    )}
+                  </div>
+                  <p
+                    style={{
+                      fontFamily: "'Fraunces', serif",
+                      fontSize: isCurrent ? 15 : 13,
+                      fontStyle: "italic",
+                      color: isCurrent ? e.color : "#6B6B6B",
+                      margin: "0 0 4px",
+                      lineHeight: 1.35,
+                    }}
+                  >
+                    {e.subtitle}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: 11,
+                      color: "#9B8FAB",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.1em",
+                      margin: 0,
+                      fontWeight: 500,
+                    }}
+                  >
+                    Weeks {e.weeks}
+                    {isCurrent && ` · you're in week ${weekInEra}`}
                   </p>
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
 
-      <div style={styles.section}>
-        <p style={styles.sectionLabel}>recent check-ins</p>
-        {checkIns.length === 0 ? (
-          <p style={{ fontSize: 13, color: "#6B6B6B" }}>no check-ins yet. no pressure.</p>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
-            {checkIns.slice(-7).reverse().map((c, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px",
-                background: "#fff", borderRadius: 8, border: "1px solid #EDE6DC", fontSize: 13 }}>
-                <span style={{ color: "#6B6B6B" }}>{new Date(c.date).toLocaleDateString([], { month: "short", day: "numeric" })}</span>
-                <span style={{ fontFamily: "'Fraunces', serif", fontStyle: "italic" }}>{c.mood}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Footer note */}
+      <p
+        style={{
+          fontFamily: "'Fraunces', serif",
+          fontSize: 12,
+          fontStyle: "italic",
+          color: "#9B8FAB",
+          textAlign: "center",
+          margin: "32px 0 0",
+          lineHeight: 1.6,
+        }}
+      >
+        eleven modules. fifty-five weeks.
+        <br />
+        one era at a time.
+      </p>
     </div>
   );
 }
