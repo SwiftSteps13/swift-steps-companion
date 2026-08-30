@@ -1504,6 +1504,14 @@ function ProgressView({ era, eraId, weekInEra, streak, checkIns }) {
 
   return (
     <div style={{ padding: "20px 22px 100px" }}>
+            <div style={{ marginBottom: 32, textAlign: "center" }}>
+        <p style={{ fontFamily: "'Fraunces', serif", fontSize: 28, fontWeight: 500, color: "#2D2D2D", margin: 0, letterSpacing: "-0.02em" }}>
+          The Eras Roadmap
+        </p>
+        <p style={{ fontFamily: "'Fraunces', serif", fontSize: 14, fontStyle: "italic", color: "#9B8FAB", margin: "6px 0 0", letterSpacing: "0.02em" }}>
+          the full journey, one era at a time
+        </p>
+      </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
         {ERAS.map((e, i) => {
           const isCurrent = i === eraId;
@@ -1703,7 +1711,7 @@ function TabBar({ tab, setTab, eraColor }) {
     { id: "home", label: "today", icon: Home },
     { id: "chat", label: "talk", icon: Sparkles },
     { id: "prompts", label: "reflect", icon: BookOpen },
-    { id: "progress", label: "steps", icon: Heart },
+    { id: "progress", label: "eras", icon: Heart },
   ];
 
   return (
