@@ -1508,8 +1508,11 @@ function ProgressView({ era, eraId, weekInEra, streak, checkIns }) {
         <p style={{ fontFamily: "'Fraunces', serif", fontSize: 28, fontWeight: 500, color: "#2D2D2D", margin: 0, letterSpacing: "-0.02em" }}>
           The Eras Roadmap
         </p>
-        <p style={{ fontFamily: "'Fraunces', serif", fontSize: 14, fontStyle: "italic", color: "#9B8FAB", margin: "6px 0 0", letterSpacing: "0.02em" }}>
+                <p style={{ fontFamily: "'Fraunces', serif", fontSize: 14, fontStyle: "italic", color: "#9B8FAB", margin: "6px 0 0", letterSpacing: "0.02em" }}>
           the full journey, one era at a time
+        </p>
+        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#9B8FAB", margin: "12px 0 0", letterSpacing: "0.06em", textTransform: "uppercase", opacity: 0.75 }}>
+          moved up a spot · same journey
         </p>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
