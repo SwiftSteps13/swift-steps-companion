@@ -1707,11 +1707,11 @@ function ProgressView({ era, eraId, weekInEra, streak, checkIns }) {
 }
 
 function TabBar({ tab, setTab, eraColor }) {
-  const tabs = [
+    const tabs = [
     { id: "home", label: "today", icon: Home },
+    { id: "progress", label: "eras", icon: Heart },
     { id: "chat", label: "talk", icon: Sparkles },
     { id: "prompts", label: "reflect", icon: BookOpen },
-    { id: "progress", label: "eras", icon: Heart },
   ];
 
   return (
