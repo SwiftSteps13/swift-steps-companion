@@ -1465,54 +1465,68 @@ function PromptsView({ era, eraId, setEraId, weekInEra }) {
 }
 
 function ProgressView({ era, eraId, weekInEra, streak, checkIns }) {
-  useEffect(() => {
-    if (document.getElementById("vinyl-pulse-css")) return;
-    const style = document.createElement("style");
-    style.id = "vinyl-pulse-css";
-    style.textContent = `
-      @keyframes vinylPulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.03); opacity: 0.92; }
-      }
-    `;
-    document.head.appendChild(style);
-  }, []);
-
   return (
     <div style={{ padding: "20px 22px 100px" }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-        {ERAS.map((e, i) => {
-          const isCurrent = i === eraId;
-          const isPast = i < eraId;
-          const isFuture = i > eraId;
-          const isLast = i === ERAS.length - 1;
-          const vinylSize = isCurrent ? 96 : 72;
-          const opacity = isFuture ? 0.35 : 1;
-          const fillColor = isFuture ? "#D4CFC4" : e.color;
+      <div style={{ marginBottom: 28 }}>
+        <p style={styles.greeting}>your steps</p>
+        <p style={styles.greetingSub}>quietly, consistently, on your own terms.</p>
+      </div>
 
-          return (
-            <div key={e.id} style={{ position: "relative" }}>
-              {!isLast && (
-                <div style={{ position: "absolute", left: isCurrent ? 47 : 35, top: vinylSize + 8, width: 2, height: 44, background: isFuture ? "#EDE6DC" : `linear-gradient(180deg, ${e.color}80, ${ERAS[i + 1].color}80)`, zIndex: 0 }} />
-              )}
-              <div style={{ display: "flex", alignItems: "center", gap: 18, padding: "12px 0", position: "relative", zIndex: 1 }}>
-                <div style={{ width: vinylSize, height: vinylSize, flexShrink: 0, opacity, animation: isCurrent ? "vinylPulse 3s ease-in-out infinite" : "none", filter: isCurrent ? `drop-shadow(0 4px 16px ${e.color}55)` : "none", transition: "all 0.3s ease" }}>
-                  <svg viewBox="0 0 100 100" width="100%" height="100%">
-                    <circle cx="50" cy="50" r="49" fill={fillColor} />
-                    {[46, 42, 38, 34, 30, 26, 22, 18].map((r) => (
-                      <circle key={r} cx="50" cy="50" r={r} fill="none" stroke={isFuture ? "#B8B3A6" : "rgba(0,0,0,0.15)"} strokeWidth="0.5" />
-                    ))}
-                    <circle cx="50" cy="50" r="14" fill={isFuture ? "#EDE6DC" : "#FAF6F0"} />
-                    <circle cx="50" cy="50" r="2" fill={isFuture ? "#B8B3A6" : "#2D2D2D"} />
-                  </svg>
+      <div style={{ ...styles.statCard, background: `linear-gradient(135deg, ${era.color}22, ${era.color}08)` }}>
+        <p style={styles.statLabel}>check-in streak</p>
+        <p style={{ ...styles.statBig, color: era.color }}>
+          {streak}<span style={{ fontSize: 16, fontWeight: 400, color: "#6B6B6B", marginLeft: 6 }}>{streak === 1 ? "day" : "days"}</span>
+        </p>
+        <p style={{ fontSize: 12, color: "#6B6B6B", marginTop: 2 }}>
+          {streak === 0 ? "start whenever you want." : "you don't have to be perfect to keep going."}
+        </p>
+      </div>
+
+      <div style={styles.section}>
+        <p style={styles.sectionLabel}>era progress</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
+          {ERAS.map((e, i) => {
+            const isCurrent = i === eraId;
+            const isPast = i < eraId;
+            return (
+              <div key={e.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
+                background: isCurrent ? `${e.color}18` : "transparent", borderRadius: 10,
+                border: isCurrent ? `1px solid ${e.color}50` : "1px solid transparent", opacity: isPast ? 0.6 : 1 }}>
+                <div style={{ width: 24, height: 24, borderRadius: "50%", background: isPast || isCurrent ? e.color : "#EDE6DC",
+                  display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "#fff", flexShrink: 0 }}>
+                  {isPast ? "✓" : isCurrent ? "•" : ""}
                 </div>
-                <div style={{ flex: 1, opacity: isFuture ? 0.55 : 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                    <p style={{ fontFamily: "'Fraunces', serif", fontSize: isCurrent ? 22 : 17, fontWeight: isCurrent ? 600 : 500, color: "#2D2D2D", margin: 0, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
-                      {e.emoji} {e.name}
-                    </p>
-                    {isPast && (
-                      <span style={{ fontSize: 11, color: e.color, fontWeight: 600, background: `${e.color}18`, padding: "2px 8px",
+                <div style={{ flex: 1 }}>
+                  <p style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 15, fontWeight: 500 }}>{e.emoji} {e.name}</p>
+                  <p style={{ margin: 0, fontSize: 11, color: "#6B6B6B" }}>
+                    {isCurrent ? `week ${weekInEra} of 5 · ${e.subtitle}` : e.subtitle}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div style={styles.section}>
+        <p style={styles.sectionLabel}>recent check-ins</p>
+        {checkIns.length === 0 ? (
+          <p style={{ fontSize: 13, color: "#6B6B6B" }}>no check-ins yet. no pressure.</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+            {checkIns.slice(-7).reverse().map((c, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px",
+                background: "#fff", borderRadius: 8, border: "1px solid #EDE6DC", fontSize: 13 }}>
+                <span style={{ color: "#6B6B6B" }}>{new Date(c.date).toLocaleDateString([], { month: "short", day: "numeric" })}</span>
+                <span style={{ fontFamily: "'Fraunces', serif", fontStyle: "italic" }}>{c.mood}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 function TabBar({ tab, setTab, eraColor }) {
   const tabs = [
