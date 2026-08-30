@@ -1260,13 +1260,7 @@ function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setSt
         </div>
       </div>
 
-      <div style={styles.section}>
-        <p style={styles.sectionLabel}>today's check-in</p>
-        {checkedInToday ? (
-          <div style={styles.checkedInCard}>
-            <p style={{ fontFamily: "'Fraunces', serif", fontSize: 17, margin: 0, color: "#2D2D2D" }}>you checked in today.</p>
-            <p style={{ fontSize: 13, color: "#6B6B6B", margin: "6px 0 0" }}>that counts. come back tomorrow if you want.</p>
-          </div>
+     
         ) : (
           <div>
             <p style={styles.checkInQ}>where are you starting from today, honestly?</p>
