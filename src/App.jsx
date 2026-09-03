@@ -918,7 +918,7 @@ function WelcomeView({ era, onEnter }) {
       <div style={welcomeStyles.scrollContent}>
         <div style={welcomeStyles.logoBlock} className="welcome-fade-1">
           <img src={logo} alt="Swift Steps" style={welcomeStyles.logoImg} />
-          <p style={welcomeStyles.appName}>ioSwiftie</p>
+          <p style={welcomeStyles.appName}>Mastermind</p>
           <p style={welcomeStyles.appBy}>by Swift Steps</p>
         </div>
 
@@ -1143,7 +1143,7 @@ function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setSt
     <div style={{ padding: "20px 22px 100px" }}>
       <div style={styles.homeBrandHeader}>
         <img src={logo} alt="Swift Steps" style={styles.homeBrandLogo} />
-        <p style={styles.homeBrandWordmark}>ioSwiftie</p>
+        <p style={styles.homeBrandWordmark}>Mastermind</p>
         <p style={styles.homeBrandBy}>by Swift Steps</p>
       </div>
 
@@ -1351,7 +1351,7 @@ function ChatView({ era, weekInEra }) {
             <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>iO</span>
           </div>
           <div style={{ flex: 1 }}>
-            <p style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 17, fontWeight: 600, fontStyle: "italic", color: "#3A2E4A", letterSpacing: "-0.01em" }}>ioSwiftie</p>
+            <p style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 17, fontWeight: 600, fontStyle: "italic", color: "#3A2E4A", letterSpacing: "-0.01em" }}>Mastermind</p>
             <p style={{ margin: 0, fontSize: 11, color: "#6B6B6B" }}>{era.emoji} {era.name} · week {weekInEra} · peer support</p>
           </div>
         </div>
