@@ -3,7 +3,7 @@ import logo from "./logo.png";
 import { Send, Home, BookOpen, Calendar, Heart, Sparkles, ChevronLeft, AlertCircle, X } from "lucide-react";
 
 // ============================================================
-// SWIFT STEPS COMPANION, peer support, not crisis care
+// MASTERMIND · SWIFT STEPS COMPANION, peer support, not crisis care
 // Curriculum aligned to the Swift Steps Bible (55-week program)
 // ============================================================
 
@@ -680,7 +680,7 @@ const WEEK_PROMPTS = {
   ],
 };
 
-const SYSTEM_PROMPT = `You are the Swift Steps Companion, a peer support companion built in the voice of Julianne Griffin, founder of Swift Steps and a Certified Peer Specialist.
+const SYSTEM_PROMPT = `You are Mastermind, the Swift Steps peer support companion, built in the voice of Julianne Griffin, founder of Swift Steps and a Certified Peer Specialist. If someone asks your name, it's Mastermind.
 
 WHO YOU ARE
 You speak like Julianne: warm, grounded, real, never preachy, never clinical. You have "come sit with us" energy. You sound like someone who's been there, not someone trying to fix anyone.
@@ -1162,8 +1162,8 @@ function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setSt
         )}
       </div>
       <HolidayBanner holidays={getActiveHolidays()} eraColor={era.color} />
-   
-        <div onClick={() => setTab("prompts")} style={{ ...styles.eraCard, background: `linear-gradient(135deg, ${era.color}22 0%, ${era.color}08 100%)`, borderLeft: `3px solid ${era.color}` }}>
+
+      <div onClick={() => setTab("prompts")} style={{ ...styles.eraCard, background: `linear-gradient(135deg, ${era.color}22 0%, ${era.color}08 100%)`, borderLeft: `3px solid ${era.color}` }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
           <div style={{ flex: 1 }}>
             <p style={styles.eraLabel}>currently sitting in</p>
@@ -1260,7 +1260,15 @@ function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setSt
         </div>
       </div>
 
-     
+      <div style={styles.section}>
+        <p style={styles.sectionLabel}>daily check-in</p>
+        {checkedInToday ? (
+          <div style={styles.checkedInCard}>
+            <p style={{ ...styles.checkInQ, margin: "0 0 4px" }}>you checked in today. that counts.</p>
+            <p style={{ fontSize: 12, color: "#6B6B6B", fontStyle: "italic", margin: 0 }}>
+              {streak > 1 ? `${streak} days in a row of showing up for yourself.` : "come back tomorrow. or don't. no pressure either way."}
+            </p>
+          </div>
         ) : (
           <div>
             <p style={styles.checkInQ}>where are you starting from today, honestly?</p>
@@ -1280,7 +1288,7 @@ function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setSt
       <div style={styles.section}>
         <button onClick={() => setTab("chat")} style={{ ...styles.bigBtn, background: era.color }}>
           <Sparkles size={16} />
-          <span>talk to the companion</span>
+          <span>talk to Mastermind</span>
         </button>
       </div>
 
@@ -1348,7 +1356,7 @@ function ChatView({ era, weekInEra }) {
       <div style={styles.chatHeader}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ ...styles.avatar, background: era.color }}>
-            <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>iO</span>
+            <span style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>M</span>
           </div>
           <div style={{ flex: 1 }}>
             <p style={{ margin: 0, fontFamily: "'Fraunces', serif", fontSize: 17, fontWeight: 600, fontStyle: "italic", color: "#3A2E4A", letterSpacing: "-0.01em" }}>Mastermind</p>
@@ -1459,24 +1467,8 @@ function PromptsView({ era, eraId, setEraId, weekInEra }) {
 }
 
 // =====================================================================
-// COMMIT #1: STEPS PAGE ROADMAP WITH NOW PLAYING SIGN
+// ERAS ROADMAP with NOW PLAYING sign
 // =====================================================================
-// Replaces ProgressView with a vinyl records roadmap
-// Current era gets an illuminated "NOW PLAYING" light box below it
-// =====================================================================
-//
-// TO DEPLOY:
-// 1. Go to: github.com/SwiftSteps13/swift-steps-companion/edit/main/src/App.jsx
-// 2. Cmd+F search for: function ProgressView
-// 3. Select from `function ProgressView(...) {` down to its closing `}`
-//    (about 63 lines — ends just before `function TabBar`)
-// 4. Delete the selection
-// 5. Paste the code below
-// 6. Commit changes
-// 7. Wait 60-90 seconds for Vercel to build
-// 8. Check swift-steps-companion.vercel.app → Steps tab
-// =====================================================================
-
 
 function ProgressView({ era, eraId, weekInEra, streak, checkIns }) {
   useEffect(() => {
@@ -1498,11 +1490,11 @@ function ProgressView({ era, eraId, weekInEra, streak, checkIns }) {
 
   return (
     <div style={{ padding: "20px 22px 100px" }}>
-            <div style={{ marginBottom: 32, textAlign: "center" }}>
+      <div style={{ marginBottom: 32, textAlign: "center" }}>
         <p style={{ fontFamily: "'Fraunces', serif", fontSize: 28, fontWeight: 500, color: "#2D2D2D", margin: 0, letterSpacing: "-0.02em" }}>
           The Eras Roadmap
         </p>
-                <p style={{ fontFamily: "'Fraunces', serif", fontSize: 14, fontStyle: "italic", color: "#9B8FAB", margin: "6px 0 0", letterSpacing: "0.02em" }}>
+        <p style={{ fontFamily: "'Fraunces', serif", fontSize: 14, fontStyle: "italic", color: "#9B8FAB", margin: "6px 0 0", letterSpacing: "0.02em" }}>
           the full journey, one era at a time
         </p>
         <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: "#9B8FAB", margin: "12px 0 0", letterSpacing: "0.06em", textTransform: "uppercase", opacity: 0.75 }}>
@@ -1704,7 +1696,7 @@ function ProgressView({ era, eraId, weekInEra, streak, checkIns }) {
 }
 
 function TabBar({ tab, setTab, eraColor }) {
-    const tabs = [
+  const tabs = [
     { id: "home", label: "today", icon: Home },
     { id: "progress", label: "eras", icon: Heart },
     { id: "chat", label: "talk", icon: Sparkles },
