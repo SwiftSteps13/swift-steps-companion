@@ -1261,31 +1261,6 @@ function HomeView({ era, eraId, setEraId, weekInEra, setWeekInEra, streak, setSt
       </div>
 
       <div style={styles.section}>
-        <p style={styles.sectionLabel}>daily check-in</p>
-        {checkedInToday ? (
-          <div style={styles.checkedInCard}>
-            <p style={{ ...styles.checkInQ, margin: "0 0 4px" }}>you checked in today. that counts.</p>
-            <p style={{ fontSize: 12, color: "#6B6B6B", fontStyle: "italic", margin: 0 }}>
-              {streak > 1 ? `${streak} days in a row of showing up for yourself.` : "come back tomorrow. or don't. no pressure either way."}
-            </p>
-          </div>
-        ) : (
-          <div>
-            <p style={styles.checkInQ}>where are you starting from today, honestly?</p>
-            <div style={styles.moodGrid}>
-              {["barely here", "tender", "okay", "steady", "good"].map((m) => (
-                <button key={m} onClick={() => handleCheckIn(m)} style={{ ...styles.moodBtn, borderColor: era.color }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = `${era.color}15`)}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
-                  {m}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div style={styles.section}>
         <button onClick={() => setTab("chat")} style={{ ...styles.bigBtn, background: era.color }}>
           <Sparkles size={16} />
           <span>talk to Mastermind</span>
